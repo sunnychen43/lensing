@@ -20,8 +20,8 @@ pgals = {'a2744' : [1.689791e-01, 1.965115e+00, 2.0],
         'm0416' : [3.737113e-01, 1.322081e+00, 2.0]}
 
 def create_memdat(cluster, catalog, outfile,
-        dzcut=0.03, sigclip=3, sigcut=3,
-        radialcut=120, maglim=23.5, colorcut=1.0):
+    dzcut=0.03, sigclip=3, sigcut=3,
+    radialcut=120, maglim=23.5, colorcut=1.0):
     """
     Create file with cluster member x, y, and magnitude in relation to BCG.
 
@@ -45,8 +45,8 @@ def create_memdat(cluster, catalog, outfile,
     colorcut : float
         How many sigma to cut membership based on color-magnitude relation
     """
-
     master = pd.read_csv(catalog)
+    
     zdat = master['master_z']
     memberindx = np.where((zdat>zclus[cluster]-dzcut)&(zdat<zclus[cluster]+dzcut))[0]
 
@@ -61,7 +61,6 @@ def create_memdat(cluster, catalog, outfile,
     zdat = master['master_z']
     mag814 = master['master_mag814']
     mag606 = master['master_mag606']
-
     master_cut = master.iloc[np.where((ddat<radialcut)&(~np.isnan(mag606))&(~np.isnan(mag814))&(mag814<=maglim))]
 
     zdat   = master_cut['master_z']
@@ -142,7 +141,7 @@ def create_galdef(cluster,imgfile,etaa,etab,memfile,losfile,memout,losout):
     # generate the deflection distributions
     aarr = np.linspace(1.0,2.5,31)
     memdef = myfit.defclass()
-    memdef.draw(memdat,imgdat,b0,aarr,nran,basename=memout,useD=True)
+    # memdef.draw(memdat,imgdat,b0,aarr,nran,basename=memout,useD=True)
 
     # los, previously los2, referenced to BCG in memdat; note that we use a=2.0 for all
     m0 = memdat.ref[1]
@@ -201,7 +200,7 @@ def run_mcmc(cluster,imgfile,halofile,memfile,losfile,mcmcout,nburn=10000,nstep=
     phalo = np.array(halo.p).flatten().tolist()
     pshr = halo.pshr
     pref = pgal + phalo + pshr
-    print(pref)
+    #print(pref)
     plabels = ['bgal', 'agal', 'alos',
      'b1', 'x1', 'y1', 'ec1', 'es1', 's1',
      'b2', 'x2', 'y2', 'ec2', 'es2', 's2',
@@ -234,7 +233,7 @@ def run_mcmc(cluster,imgfile,halofile,memfile,losfile,mcmcout,nburn=10000,nstep=
 
     # make plots
     fit.MCplot(mcmcout+'-mc.pdf',labels=plabels,fmt='.3f',truths=pref)
-    #fit.plot_Fisher(outbase+'-fish.pdf',nsamp=1000,labels=plabels,truths=pref)
+    fit.plot_Fisher(outbase+'-fish.pdf',nsamp=1000,labels=plabels,truths=pref)
 
 def get_params(mem,etab,etaa,los,losb,parms,scatter=True):
     IDarr = []; params = []

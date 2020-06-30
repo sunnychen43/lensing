@@ -1,10 +1,12 @@
 import numpy as np
 from scipy.optimize import minimize
 import numdifftools as nd
-import pickle
+import dill as pickle
 import emcee
 import matplotlib.pyplot as plt
 import corner
+from numba import njit
+from multiprocessing import Pool
 
 testmode = False
 
@@ -254,7 +256,7 @@ class galclass:
 ######################################################################
 # class to characterize deflection distribution
 ######################################################################
-
+ 
 class defclass:
 
     ##################################################################
@@ -737,9 +739,10 @@ class fitclass:
     ##################################################################
     def MCrun(self,p0=[]):
 
+        #self.nwalk,ndim,f = pickle.load(open("f.pkl", "rb"))
         f = lambda x: self.lnP(x)[self.mode]
 
-        # if p0 is given, use it; if not, use result from optimization
+        #if p0 is given, use it; if not, use result from optimization
         if len(p0)==0:
             p0 = self.best.x.copy()
         ndim = len(p0)
@@ -757,21 +760,10 @@ class fitclass:
         self.sampler = emcee.EnsembleSampler(self.nwalk,ndim,f)
 
         # run some steps as a burn-in
-        if self.savesteps:
-            f = open(self.basename+'-burn-tmp.txt','w')
-            f.close()
         if self.MCverb: print('emcee: burn-in run')
         for i,result in enumerate(self.sampler.sample(pstart,iterations=self.nburn)):
-            if self.MCverb and i%1000==0: print('emcee: step',i)
-            if self.savesteps:
-                position = result[0]
-                f = open(self.basename+'-burn-tmp.txt','a')
-                for k in range(position.shape[0]):
-                    f.write('{0:4d}'.format(k))
-                    for iparm in range(position.shape[1]):
-                        f.write(' {0:e}'.format(position[k,iparm]))
-                    f.write('\n')
-                f.close()
+            if i%1000==0: print('emcee: step',i)
+
         if self.MCsave:
             np.save(self.basename+'-burn',self.sampler.chain.reshape((-1,ndim)))
             np.save(self.basename+'-burn-chi',-2.0*self.sampler.lnprobability.reshape((-1)))
@@ -782,21 +774,10 @@ class fitclass:
         self.sampler.reset()
 
         # start from end of burn-in and sample many more steps
-        if self.savesteps==True:
-            f = open(self.basename+'-main-tmp.txt','w')
-            f.close()
         if self.MCverb: print('emcee: main run')
         for i,result in enumerate(self.sampler.sample(pos,iterations=self.nstep,rstate0=state)):
-            if self.MCverb and i%1000==0: print('emcee: step',i)
-            if self.savesteps==True:
-                position = result[0]
-                f = open(self.basename+'-main-tmp.txt','a')
-                for k in range(position.shape[0]):
-                    f.write('{0:4d}'.format(k))
-                    for iparm in range(position.shape[1]):
-                        f.write(' {0:e}'.format(position[k,iparm]))
-                    f.write('\n')
-                f.close()
+            if i%1000==0: print('emcee: step',i)
+
         if self.MCsave:
             np.save(self.basename+'-main',self.sampler.chain.reshape((-1,ndim)))
             np.save(self.basename+'-main-chi',-2.0*self.sampler.lnprobability.reshape((-1)))
@@ -876,7 +857,7 @@ class fitclass:
 ######################################################################
 # softened isothermal elliptical mass distribution
 ######################################################################
-
+@njit
 def isoemd(params,xarr):
 
     b  = params[0]

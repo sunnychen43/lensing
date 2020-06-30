@@ -34,6 +34,7 @@ def func(p):
         chisq = chisq + chi_bound(bhalo,-1.0,2.0,0.001)
         chisq = chisq + chi_bound(shalo,-1.0,2.0,0.001)
     # Gaussian prior on ellipticity of halo3
+    chisq += chi_prior(phalo[2,0],-1.0,0.001)
     ec = phalo[2,3]
     es = phalo[2,4]
     sg = 0.3
