@@ -761,7 +761,7 @@ class fitclass:
 
         # run some steps as a burn-in
         if self.MCverb: print('emcee: burn-in run')
-        for i,result in enumerate(self.sampler.sample(pstart,iterations=self.nburn)):
+        for i,result in enumerate(self.sampler.sample(pstart,iterations=self.nburn, progress=True)):
             if i%1000==0: print('emcee: step',i)
 
         if self.MCsave:
@@ -775,7 +775,7 @@ class fitclass:
 
         # start from end of burn-in and sample many more steps
         if self.MCverb: print('emcee: main run')
-        for i,result in enumerate(self.sampler.sample(pos,iterations=self.nstep,rstate0=state)):
+        for i,result in enumerate(self.sampler.sample(pos,iterations=self.nstep,rstate0=state, progress=True)):
             if i%1000==0: print('emcee: step',i)
 
         if self.MCsave:
