@@ -6,7 +6,11 @@ import emcee
 import matplotlib.pyplot as plt
 import corner
 from numba import njit
-from multiprocessing import Pool
+from numba import NumbaDeprecationWarning, NumbaPendingDeprecationWarning
+import warnings
+
+warnings.simplefilter('ignore', category=NumbaDeprecationWarning)
+warnings.simplefilter('ignore', category=NumbaPendingDeprecationWarning)
 
 testmode = False
 
@@ -761,8 +765,7 @@ class fitclass:
 
         # run some steps as a burn-in
         if self.MCverb: print('emcee: burn-in run')
-        for i,result in enumerate(self.sampler.sample(pstart,iterations=self.nburn, progress=True)):
-            if i%1000==0: print('emcee: step',i)
+        result = self.sampler.run_mcmc(pstart, self.nburn, progress=True)
 
         if self.MCsave:
             np.save(self.basename+'-burn',self.sampler.chain.reshape((-1,ndim)))
@@ -775,8 +778,7 @@ class fitclass:
 
         # start from end of burn-in and sample many more steps
         if self.MCverb: print('emcee: main run')
-        for i,result in enumerate(self.sampler.sample(pos,iterations=self.nstep,rstate0=state, progress=True)):
-            if i%1000==0: print('emcee: step',i)
+        self.sampler.run_mcmc(pos, self.nstep, rstate0=state, progress=True)
 
         if self.MCsave:
             np.save(self.basename+'-main',self.sampler.chain.reshape((-1,ndim)))
@@ -972,7 +974,7 @@ def calcdef_pj2(params,xarr,logflags):
 ######################################################################
 # shear
 ######################################################################
-
+@njit
 def calcdef_shr(p,xarr,logflags=[False,False]):
     # shear components (Cartesian)
     gc = p[0]
@@ -1045,7 +1047,7 @@ def skip_comments(file):
 ######################################################################
 # take a list of Gamma matrices and construct the big minverse matrix
 ######################################################################
-
+@njit
 def Gam2minv(Garr):
     nimg = len(Garr)
     Gmat = np.zeros((2*nimg,2*nimg))
@@ -1059,7 +1061,7 @@ def Gam2minv(Garr):
 ######################################################################
 # the matrix product A.B.AT comes up several times
 ######################################################################
-
+@njit
 def dotABAT(A,B):
     return np.dot(A,np.dot(B,A.T))
 

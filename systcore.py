@@ -141,7 +141,7 @@ def create_galdef(cluster,imgfile,etaa,etab,memfile,losfile,memout,losout):
     # generate the deflection distributions
     aarr = np.linspace(1.0,2.5,31)
     memdef = myfit.defclass()
-    # memdef.draw(memdat,imgdat,b0,aarr,nran,basename=memout,useD=True)
+    memdef.draw(memdat,imgdat,b0,aarr,nran,basename=memout,useD=True)
 
     # los, previously los2, referenced to BCG in memdat; note that we use a=2.0 for all
     m0 = memdat.ref[1]
@@ -200,6 +200,7 @@ def run_mcmc(cluster,imgfile,halofile,memfile,losfile,mcmcout,nburn=10000,nstep=
     phalo = np.array(halo.p).flatten().tolist()
     pshr = halo.pshr
     pref = pgal + phalo + pshr
+    np.save("pref.npy", pref)
     #print(pref)
     plabels = ['bgal', 'agal', 'alos',
      'b1', 'x1', 'y1', 'ec1', 'es1', 's1',
@@ -233,7 +234,7 @@ def run_mcmc(cluster,imgfile,halofile,memfile,losfile,mcmcout,nburn=10000,nstep=
 
     # make plots
     fit.MCplot(mcmcout+'-mc.pdf',labels=plabels,fmt='.3f',truths=pref)
-    fit.plot_Fisher(outbase+'-fish.pdf',nsamp=1000,labels=plabels,truths=pref)
+    # fit.plot_Fisher(mcmcout+'-fish.pdf',nsamp=1000,labels=plabels,truths=pref)
 
 def get_params(mem,etab,etaa,los,losb,parms,scatter=True):
     IDarr = []; params = []

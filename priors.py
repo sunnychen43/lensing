@@ -34,10 +34,11 @@ def func(p):
         chisq = chisq + chi_bound(bhalo,-1.0,2.0,0.001)
         chisq = chisq + chi_bound(shalo,-1.0,2.0,0.001)
     # Gaussian prior on ellipticity of halo3
-    chisq += chi_prior(phalo[2,0],-1.0,0.001)
+    # chisq += chi_prior(phalo[2,0],-1.0,0.001)
+    # chisq += chi_prior(phalo[2,1], 0.0, 0.01) + chi_prior(phalo[2,2], 0.0, 0.01)
     ec = phalo[2,3]
     es = phalo[2,4]
-    sg = 0.3
+    sg = 0.1
     chisq = chisq + (ec**2+es**2)/sg**2
     # return lnP
     return -0.5*chisq

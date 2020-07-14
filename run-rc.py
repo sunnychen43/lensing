@@ -9,9 +9,9 @@ if cluster == 'a2744':
 if cluster == 'm0416':
     parmfile = cluster+'/dat/m0416-parms-2d.dat'
 etab = 0.5; etaa = 0.5
-for val in np.arange(30,31,30):
+for val in np.arange(120,121,30):
     rc = 'rc'+str(val)
-    scale = 'scale1'
+    scale = 'scale2'
     imgdatfile = cluster+'/dat/images.dat'
     imgsig05datfile = cluster+'/dat/images-sig0.5.dat'
     memdatfile = cluster+'/dat/'+rc+'.dat'
@@ -31,10 +31,10 @@ for val in np.arange(30,31,30):
     # core.create_memdat(cluster, catalog, memdatfile, radialcut=val)
 
     # deflection analysis, we'll do just def1 I think
-    #core.create_galdef(cluster, imgdatfile, etaa, etab, memdatfile, losdatfile, memdeffile, losdeffile)
+    # core.create_galdef(cluster, imgdatfile, etaa, etab, memdatfile, losdatfile, memdeffile, losdeffile)
 
     # Run MCMC
-    core.run_mcmc(cluster, imgsig05datfile, halodatfile, memdeffile, losdeffile, cluster+'/fit/fit2-scale1-'+rc)
+    core.run_mcmc(cluster, imgsig05datfile, halodatfile, memdeffile, losdeffile, cluster+'/fit/fit2-scale2-'+rc)
     # mcmctime = time.time()
 
     # # Get mags
