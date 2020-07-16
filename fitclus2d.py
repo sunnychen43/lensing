@@ -1014,6 +1014,7 @@ def calcdef(IDarr,parr,xarr,logflags=[False,False]):
     Gamarr = np.zeros((nimg,2,2))
     for i,ID in enumerate(IDarr):
         ptmp = parr[i].copy()
+        ptmp = np.array(ptmp, dtype=np.float32)
         deftmp,Gamtmp = calcdef_dict[ID](ptmp,xarr,logflags)
         defarr = defarr + deftmp
         Gamarr = Gamarr + Gamtmp

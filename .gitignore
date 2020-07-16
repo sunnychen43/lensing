@@ -2,3 +2,7 @@
 *.csv
 *.dat
 .DS_Store
+*.pkl
+*.pyc
+*.ipynb
+

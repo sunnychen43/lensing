@@ -10,6 +10,7 @@ cosmo = FlatLambdaCDM(H0=70, Om0=0.3)
 import sys
 import fitclus2d as myfit
 import priors
+import pickle
 
 
 fieldcenter = {'a2744' : SkyCoord('00h14m21.2s','-30d23m50.1s'),
@@ -141,7 +142,7 @@ def create_galdef(cluster,imgfile,etaa,etab,memfile,losfile,memout,losout):
     # generate the deflection distributions
     aarr = np.linspace(1.0,2.5,31)
     memdef = myfit.defclass()
-    # memdef.draw(memdat,imgdat,b0,aarr,nran,basename=memout,useD=True)
+    memdef.draw(memdat,imgdat,b0,aarr,nran,basename=memout,useD=True)
 
     # los, previously los2, referenced to BCG in memdat; note that we use a=2.0 for all
     m0 = memdat.ref[1]
@@ -200,6 +201,7 @@ def run_mcmc(cluster,imgfile,halofile,memfile,losfile,mcmcout,nburn=10000,nstep=
     phalo = np.array(halo.p).flatten().tolist()
     pshr = halo.pshr
     pref = pgal + phalo + pshr
+    np.save("pref.npy", pref)
     #print(pref)
     plabels = ['bgal', 'agal', 'alos',
      'b1', 'x1', 'y1', 'ec1', 'es1', 's1',
@@ -267,7 +269,10 @@ def get_mags(N,etab,etaa,chain,mems,loss,losb,xarr):
     mem=np.loadtxt(mems)
     los=np.loadtxt(loss)
 
+    count = 1
     for d in np.random.permutation(np.arange(len(chain)))[:N]:
+        print(count)
+        count += 1
         IDs,params = get_params(mem,etab,etaa,los,losb,chain[d],scatter=True)
         mu = myfit.calcmag(IDs,params,np.array(xarr),logflags=[True,True])
         mags.append(mu)
