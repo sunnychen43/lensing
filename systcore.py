@@ -235,7 +235,7 @@ def run_mcmc(cluster,imgfile,halofile,memfile,losfile,mcmcout,nburn=10000,nstep=
 
     # make plots
     fit.MCplot(mcmcout+'-mc.pdf',labels=plabels,fmt='.3f',truths=pref)
-    fit.plot_Fisher(outbase+'-fish.pdf',nsamp=1000,labels=plabels,truths=pref)
+    # fit.plot_Fisher(mcmcout+'-fish.pdf',nsamp=1000,labels=plabels,truths=pref)
 
 def get_params(mem,etab,etaa,los,losb,parms,scatter=True):
     IDarr = []; params = []

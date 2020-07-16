@@ -11,7 +11,7 @@ if cluster == 'm0416':
 etab = 0.5; etaa = 0.5
 for val in np.arange(120,121,30):
     rc = 'rc'+str(val)
-    scale = 'scale1'
+    scale = 'scale2'
     imgdatfile = cluster+'/dat/images.dat'
     imgsig05datfile = cluster+'/dat/images-sig0.5.dat'
     memdatfile = cluster+'/dat/'+rc+'.dat'
